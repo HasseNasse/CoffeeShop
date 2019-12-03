@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+
+  app:
+    image: hassenasse/openliberty:19.0.0.11-jdk11
+    volumes:
+      - "./liberty/server.xml:/opt/liberty/wlp/usr/servers/defaultServer/server.xml"
+      - "./liberty/server.env:/opt/liberty/wlp/usr/servers/defaultServer/server.env"
+      - "./liberty/jvm.options:/opt/liberty/wlp/usr/servers/defaultServer/jvm.options"
+      - "./liberty/bootstrap.properties:/opt/liberty/wlp/usr/servers/defaultServer/bootstrap.properties"
+      - "./liberty/resources:/opt/liberty/wlp/usr/shared/resources/"
+      - "/tmp/wad-dropins/:/opt/liberty/wlp/usr/servers/defaultServer/dropins/"
+    ports:
+      - "9080:9080"
+      - "9443:9443"
+  zookeeper:
+    image: strimzi/kafka:0.11.3-kafka-2.1.0
+    command: [
+      "sh", "-c",
+      "bin/zookeeper-server-start.sh config/zookeeper.properties"
+    ]
+    ports:
+      - "2181:2181"
+    environment:
+      LOG_DIR: /tmp/logs
+  kafka:
+    image: strimzi/kafka:0.11.3-kafka-2.1.0
+    command: [
+      "sh", "-c",
+      "bin/kafka-server-start.sh config/server.properties --override listeners=$${KAFKA_LISTENERS} --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS} --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+    ]
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      LOG_DIR: "/tmp/logs"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
