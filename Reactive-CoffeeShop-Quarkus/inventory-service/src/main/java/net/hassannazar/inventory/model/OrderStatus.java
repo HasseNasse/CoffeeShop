@@ -1,4 +1,4 @@
-package net.hassannazar.orders.model;
+package net.hassannazar.inventory.model;
 
 /**
  * Purpose:
@@ -8,8 +8,6 @@ package net.hassannazar.orders.model;
  */
 public enum OrderStatus {
     PLACED,
-    BEANS_ALLOCATED,
     ORDER_FAILED,
-    UNDER_PREPARATION,
-    FINISHED
+    BEANS_ALLOCATED
 }

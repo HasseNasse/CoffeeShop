@@ -1,4 +1,4 @@
-package net.hassannazar.orders.domain;
+package net.hassannazar.orders.gateway;
 
 import io.smallrye.reactive.messaging.annotations.Channel;
 import io.smallrye.reactive.messaging.annotations.Emitter;
@@ -21,15 +21,18 @@ import java.util.UUID;
  * @author www.hassannazar.net
  */
 @RequestScoped
-public class OrderService {
+public class OrderProducer {
 
     @Inject
     @ConfigProperty(name = "application.name")
     String whoAmI;
 
     @Inject
-    @Channel("orders")
+    @Channel("order-received")
     Emitter<Order> orderEmitter;
+
+    @Inject
+    OrderStatusProducer statusProducer;
 
     /**
      * Emits an order-received event.
@@ -44,7 +47,11 @@ public class OrderService {
             order.modified = LocalDateTime.now();
             order.modifier = whoAmI;
 
+            // Send order-received event
             orderEmitter.send(order);
+
+            // Send order-status event
+            statusProducer.send(order);
         } catch (Exception e){
             throw new OrderPlacementException();
         }

@@ -1,7 +1,7 @@
 package net.hassannazar.orders.boundary;
 
 import io.smallrye.reactive.messaging.annotations.Channel;
-import net.hassannazar.orders.domain.OrderService;
+import net.hassannazar.orders.gateway.OrderProducer;
 import net.hassannazar.orders.model.Order;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.jboss.resteasy.annotations.SseElementType;
@@ -19,11 +19,11 @@ import javax.ws.rs.core.Response;
 public class OrderResource implements IOrderResource {
 
     @Inject
-    @Channel("orders-placed")
+    @Channel("status")
     Publisher<Order> orders;
 
     @Inject
-    OrderService service;
+    OrderProducer service;
 
     @GET
     @Path("/stream")

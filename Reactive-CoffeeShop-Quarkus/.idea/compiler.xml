@@ -16,7 +16,7 @@
       <module name="barista-service" target="1.8" />
       <module name="Coffeeshop" target="1.5" />
       <module name="inventory-service" target="1.8" />
-      <module name="order-service" target="1.8" />
+      <module name="order-service" target="13" />
     </bytecodeTargetLevel>
   </component>
 </project>
