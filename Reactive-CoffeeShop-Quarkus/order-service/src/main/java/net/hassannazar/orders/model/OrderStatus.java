@@ -7,7 +7,7 @@ package net.hassannazar.orders.model;
  * @author www.hassannazar.net
  */
 public enum OrderStatus {
-    PLACED,
+    PENDING,
     BEANS_ALLOCATED,
     ORDER_FAILED,
     UNDER_PREPARATION,

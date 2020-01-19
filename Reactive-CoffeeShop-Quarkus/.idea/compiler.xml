@@ -6,16 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Coffeeshop" />
         <module name="order-service" />
         <module name="inventory-service" />
         <module name="barista-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="barista-service" target="1.8" />
-      <module name="Coffeeshop" target="1.5" />
-      <module name="inventory-service" target="1.8" />
+      <module name="barista-service" target="13" />
+      <module name="Coffeeshop" target="13" />
+      <module name="inventory-service" target="13" />
       <module name="order-service" target="13" />
     </bytecodeTargetLevel>
   </component>

@@ -1,7 +1,7 @@
 package net.hassannazar.orders.model.serde;
 
 import io.quarkus.kafka.client.serialization.JsonbDeserializer;
-import net.hassannazar.orders.model.Order;
+import net.hassannazar.orders.model.read.Order;
 
 /**
  * Purpose:
