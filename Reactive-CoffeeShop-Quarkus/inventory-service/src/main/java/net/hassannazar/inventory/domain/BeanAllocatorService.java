@@ -1,15 +1,14 @@
 package net.hassannazar.inventory.domain;
 
-import net.hassannazar.application.exceptions.NoSuchCoffeeException;
 import net.hassannazar.application.exceptions.NotEnoughBeansException;
-import net.hassannazar.inventory.model.Order;
-import net.hassannazar.inventory.model.OrderStatus;
-import net.hassannazar.inventory.repository.BeansRepository;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import net.hassannazar.inventory.gateway.model.OrderCreated;
+import net.hassannazar.inventory.model.Inventory;
+import net.hassannazar.inventory.model.InventoryType;
+import net.hassannazar.inventory.repository.InventoryRepository;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.UUID;
+import javax.transaction.Transactional;
 
 /**
  * Purpose:
@@ -21,15 +20,23 @@ import java.util.UUID;
 public class BeanAllocatorService {
 
     @Inject
-    BeansRepository beansRepository;
+    InventoryRepository inventoryRepository;
 
     @Inject
     CoffeeClassifier classifier;
 
+    public void restockBeansInInventory(final int beansStock) {
+        final var inventory = new Inventory();
+        inventory.setStock(beansStock);
+        inventory.setType(InventoryType.BEANS);
+        inventoryRepository.restock(inventory);
+    }
 
-    public void allocateBeansForOrder (Order order) throws NoSuchCoffeeException, NotEnoughBeansException {
+    @Transactional
+    public void allocateBeansForOrder(final OrderCreated order) throws NotEnoughBeansException {
         System.out.println("Attempting to allocate beans for order with id: " + order.id);
         final int gramsOfBeans = classifier.classifyCoffee(order.type);
-        beansRepository.allocate(gramsOfBeans * order.quantity);
+        final var inventory = inventoryRepository.getStock(InventoryType.BEANS);
+        inventoryRepository.allocate(inventory, gramsOfBeans * order.quantity);
     }
 }
