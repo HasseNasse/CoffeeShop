@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
  */
 public class Order implements Serializable {
 
-    private long id;
-    private LocalDateTime orderDate;
+    public long id;
+    public LocalDateTime orderDate;
     @NotEmpty(message = "Coffee type name must be present")
-    private String type;
+    public String type;
     @NotNull
-    private int quantity;
-    private OrderStatus status;
+    public int quantity;
+    public OrderStatus status;
 
     public Order() {
     }

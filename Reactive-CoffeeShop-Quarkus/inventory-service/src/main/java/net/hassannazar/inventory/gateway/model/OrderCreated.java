@@ -1,5 +1,9 @@
 package net.hassannazar.inventory.gateway.model;
 
+import org.wildfly.common.annotation.NotNull;
+
+import javax.validation.constraints.NotEmpty;
+
 /**
  * Purpose:
  *
@@ -7,7 +11,10 @@ package net.hassannazar.inventory.gateway.model;
  * @author www.hassannazar.net
  */
 public class OrderCreated {
+    @NotNull
     public long id;
+    @NotEmpty
     public String type;
+    @NotNull
     public int quantity;
 }

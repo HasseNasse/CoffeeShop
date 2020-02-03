@@ -3,26 +3,33 @@
 
     <!-- Enable features -->
     <featureManager>
-        <feature>microProfile-3.0</feature>
-        <feature>javaee-8.0</feature>
+        <feature>microProfile-3.2</feature>
+        <feature>ejbLite-3.2</feature>
+        <feature>jndi-1.0</feature>
+        <feature>jpa-2.2</feature>
+        <feature>servlet-4.0</feature>
+        <feature>localConnector-1.0</feature>
+        <feature>mpReactiveMessaging-1.0</feature>
     </featureManager>
 
-    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="${HTTP_PORT}" httpsPort="${HTTPS_PORT}" />
+    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="9090" httpsPort="9993"/>
 
     <library id="H2JDBCLib">
-        <fileset dir="${server.config.dir}/resources/"/>
+        <fileset dir="${server.config.dir}"/>
     </library>
 
     <dataSource id="inventoryServiceDB" jndiName="jdbc/inventory">
         <jdbcDriver libraryRef="H2JDBCLib"/>
         <properties
-                URL="jdbc:h2:tcp://localhost/~/inventoryServiceDB;MODE=MSSQLServer"
+                URL="jdbc:h2:mem:inventoryService;MODE=MSSQLServer"
                 user="sa"
                 password="sa"
         />
     </dataSource>
 
     <!-- Automatically expand WAR files and EAR files -->
-    <applicationManager autoExpand="true" />
-    <applicationMonitor dropins="dropins" dropinsEnabled="true" pollingRate="500ms" updateTrigger="polled" />
+    <applicationManager autoExpand="true"/>
+    <applicationMonitor dropins="dropins" dropinsEnabled="true" pollingRate="500ms" updateTrigger="polled"/>
+
+    <webApplication contextRoot="/" location="inventory-service.war"/>
 </server>

@@ -1,9 +1,9 @@
-package net.hassannazar.order.model.entity;
-
-import net.hassannazar.order.model.CoffeeType;
-import net.hassannazar.order.model.OrderStatus;
+package net.hassannazar.order.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -14,23 +14,28 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "orders")
-public class OrderEntity {
+@NamedQuery(name = "Orders.getAll", query = "select d from Orders d")
+public class Orders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private LocalDateTime orderDate;
+    private final LocalDateTime orderDate;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private CoffeeType type;
 
+    @NotNull
+    @Min(1)
+    @Max(5)
     private int quantity;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    public OrderEntity() {
+    public Orders() {
         this.orderDate = LocalDateTime.now();
         this.orderStatus = OrderStatus.PENDING;
     }
@@ -39,44 +44,35 @@ public class OrderEntity {
         return this.id;
     }
 
-    public OrderEntity setId(final long id) {
+    public void setId(final long id) {
         this.id = id;
-        return this;
     }
 
     public LocalDateTime getOrderDate() {
         return this.orderDate;
     }
 
-    public OrderEntity setOrderDate(final LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-        return this;
-    }
-
     public CoffeeType getType() {
         return this.type;
     }
 
-    public OrderEntity setType(final CoffeeType type) {
+    public void setType(final CoffeeType type) {
         this.type = type;
-        return this;
     }
 
     public int getQuantity() {
         return this.quantity;
     }
 
-    public OrderEntity setQuantity(final int quantity) {
+    public void setQuantity(final int quantity) {
         this.quantity = quantity;
-        return this;
     }
 
     public OrderStatus getOrderStatus() {
         return this.orderStatus;
     }
 
-    public OrderEntity setOrderStatus(final OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-        return this;
+    public void setOrderStatus(final OrderStatus status) {
+        this.orderStatus = status;
     }
 }

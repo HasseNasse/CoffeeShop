@@ -22,6 +22,10 @@ public class CoffeeClassifier {
      * @return
      */
     public int classifyCoffee(final String type) {
+        if (type == null) {
+            return 0;
+        }
+
         final var formattedType = type.toLowerCase().replace(" ", "-");
         if (formattedType.equals("black") || formattedType.equals("latte")) {
             return 10;

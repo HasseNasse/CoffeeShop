@@ -9,6 +9,9 @@ import net.hassannazar.inventory.repository.InventoryRepository;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Purpose:
@@ -33,10 +36,11 @@ public class BeanAllocatorService {
     }
 
     @Transactional
-    public void allocateBeansForOrder(final OrderCreated order) throws NotEnoughBeansException {
+    public CompletionStage<Void> allocateBeansForOrder(@Valid final OrderCreated order) throws NotEnoughBeansException {
         System.out.println("Attempting to allocate beans for order with id: " + order.id);
         final int gramsOfBeans = classifier.classifyCoffee(order.type);
         final var inventory = inventoryRepository.getStock(InventoryType.BEANS);
         inventoryRepository.allocate(inventory, gramsOfBeans * order.quantity);
+        return CompletableFuture.completedFuture(null);
     }
 }

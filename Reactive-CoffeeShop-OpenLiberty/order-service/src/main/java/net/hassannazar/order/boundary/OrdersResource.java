@@ -1,7 +1,9 @@
 package net.hassannazar.order.boundary;
 
 import net.hassannazar.order.domain.OrderService;
-import net.hassannazar.order.model.entity.OrderEntity;
+import net.hassannazar.order.model.Orders;
+import org.apache.commons.lang3.NotImplementedException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -28,14 +30,30 @@ public class OrdersResource {
     @Inject
     private OrderService service;
 
+    @Inject
+    @ConfigProperty(name = "application.use.orchestration.saga")
+    private boolean useOrchestration;
+
+    @Inject
+    @ConfigProperty(name = "application.use.choreography.saga")
+    private boolean useChoreography;
+
+
     @GET
     public Response getAllOrders() {
-        return Response.ok().build();
+        final var orders = this.service.getAllOrders();
+        return Response.ok(orders).build();
     }
 
     @POST
-    public Response createOrder(@Valid final OrderEntity entity) {
-        final var uriId = this.service.createOrder(entity);
+    public Response createOrder(@Valid final Orders entity) {
+        var uriId = -1L;
+        if (this.useChoreography) {
+            uriId = this.service.createOrder(entity);
+        }
+        if (this.useOrchestration) {
+            throw new NotImplementedException("Not yet implemented");
+        }
         final var uriLocation = this.uriInfo.getAbsolutePathBuilder().path(Long.toString(uriId)).build();
         return Response.created(uriLocation).build();
     }

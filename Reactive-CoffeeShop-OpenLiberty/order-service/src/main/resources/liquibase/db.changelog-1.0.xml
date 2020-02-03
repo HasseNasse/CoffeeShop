@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="hassannazar" author="changelog-1.0:1">
+    <changeSet id="changelog-1.0:1" author="hassenasse">
         <createTable tableName="orders">
             <column name="id" autoIncrement="true" type="int">
                 <constraints primaryKey="true" nullable="false"/>
@@ -14,6 +14,18 @@
             <column name="type" type="varchar(30)"/>
             <column name="quantity" type="int"/>
             <column name="orderStatus" type="varchar(30)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="changelog-1.0:2" author="hassenasse">
+        <createTable tableName="eventOutbox">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="aggregateType" type="varchar(255)"/>
+            <column name="aggregate" type="varchar(max)"/>
+            <column name="occurredOn" type="timestamp"/>
+            <column name="processedOn" type="timestamp"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

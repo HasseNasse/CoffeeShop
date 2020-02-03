@@ -35,7 +35,7 @@ public class OrderManagementService {
         entity.status = OrderStatus.PENDING;
         entity.type = order.getType();
         final var savedOrder = repository.save(entity);
-        eventsProducer.publishEvent(order);
+        eventsProducer.publishEvent(savedOrder);
         return savedOrder.id;
     }
 

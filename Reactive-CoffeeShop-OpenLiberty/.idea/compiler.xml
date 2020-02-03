@@ -12,10 +12,10 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="barista-service" target="11" />
-      <module name="inventory-service" target="11" />
-      <module name="order-service" target="11" />
-      <module name="Reactive-CoffeeShop-Liberty" target="11" />
+      <module name="barista-service" target="13" />
+      <module name="inventory-service" target="13" />
+      <module name="order-service" target="13" />
+      <module name="Reactive-CoffeeShop-Liberty" target="13" />
     </bytecodeTargetLevel>
   </component>
 </project>

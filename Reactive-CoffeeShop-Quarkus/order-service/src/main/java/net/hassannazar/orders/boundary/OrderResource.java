@@ -5,6 +5,7 @@ import net.hassannazar.orders.model.read.Order;
 import org.eclipse.microprofile.faulttolerance.Retry;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -31,10 +32,9 @@ public class OrderResource implements IOrderResource {
     @POST
     @Override
     @Retry(maxRetries = 4)
-    public Response postOrder(final Order order) {
+    public Response postOrder(@Valid final Order order) {
         final var id = orderManagementService.placeOrder(order);
         final var uri = uriInfo.getAbsolutePathBuilder().path(Long.toString(id)).build();
         return Response.created(uri).build();
     }
-
 }
