@@ -10,10 +10,8 @@
             <column name="id" autoIncrement="true" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <!--<column name="orderDate" type="timestamp"/>
             <column name="type" type="varchar(30)"/>
             <column name="quantity" type="int"/>
-            <column name="orderStatus" type="varchar(30)"/>-->
         </createTable>
     </changeSet>
 </databaseChangeLog>

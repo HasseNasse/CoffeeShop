@@ -2,6 +2,8 @@ package net.hassannazar.application;
 
 import liquibase.exception.LiquibaseException;
 import net.hassannazar.application.liquibase.LiquibaseUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -21,14 +23,15 @@ import java.sql.SQLException;
 @Singleton
 @TransactionManagement(TransactionManagementType.BEAN)
 public class Application {
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Inject
     private
     LiquibaseUpdater updater;
 
     @PostConstruct
-    void startUp() {
-        System.out.println("Starting Order Service..");
+    public void startUp() {
+        logger.debug("Starting Order Service..");
         // Run Liquibase update
         try {
             this.updater.update();

@@ -21,7 +21,7 @@
     <dataSource id="inventoryServiceDB" jndiName="jdbc/inventory">
         <jdbcDriver libraryRef="H2JDBCLib"/>
         <properties
-                URL="jdbc:h2:mem:inventoryService;MODE=MSSQLServer"
+                URL="jdbc:h2:tcp://localhost/./inventoryService;MODE=MSSQLServer"
                 user="sa"
                 password="sa"
         />

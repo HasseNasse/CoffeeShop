@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "orders")
-@NamedQuery(name = "Orders.getAll", query = "select d from Orders d")
-public class Order {
+@NamedQuery(name = OrderEntity.GETALL, query = "select d from OrderEntity d")
+public class OrderEntity {
+
+    static final String GETALL = "OrderEntity.getAll";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +37,19 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    public Order() {
+    private String orderer;
+
+    public OrderEntity() {
         this.orderDate = LocalDateTime.now();
         this.orderStatus = OrderStatus.PENDING;
+    }
+
+    public String getOrderer() {
+        return this.orderer;
+    }
+
+    public void setOrderer(final String orderer) {
+        this.orderer = orderer;
     }
 
     public long getId() {

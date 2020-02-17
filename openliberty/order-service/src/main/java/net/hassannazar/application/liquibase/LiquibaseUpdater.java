@@ -9,6 +9,8 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.Dependent;
@@ -25,6 +27,7 @@ import java.sql.SQLException;
  */
 @Dependent
 public class LiquibaseUpdater {
+    private static final Logger logger = LoggerFactory.getLogger(LiquibaseUpdater.class);
 
     @Resource(lookup = "jdbc/order")
     private DataSource dataSource;
@@ -42,7 +45,7 @@ public class LiquibaseUpdater {
      */
     public void update() throws SQLException, LiquibaseException {
         if (!this.shouldUpdate) {
-            System.out.println("Skipping liquibase update due to property  ::liquibase.should.run.update:: == false");
+            logger.debug("Skipping liquibase update due to property  ::liquibase.should.run.update:: == false");
             return;
         }
 

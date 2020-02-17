@@ -1,9 +1,9 @@
 package net.hassannazar.order.domain;
 
 import net.hassannazar.order.gateway.OrderEventsPublisher;
-import net.hassannazar.order.model.Order;
+import net.hassannazar.order.model.OrderEntity;
 import net.hassannazar.order.model.OrderStatus;
-import net.hassannazar.order.model.event.OrderCreatedEvent;
+import net.hassannazar.order.model.aggregate.OrderAggregate;
 import net.hassannazar.order.repository.OrderRepository;
 import net.hassannazar.outbox.domain.OutboxingService;
 import net.hassannazar.outbox.model.OutboxMessage;
@@ -33,32 +33,35 @@ public class OrderService {
     private boolean useTransactionalOutbox;
 
     @Transactional
-    public long createOrder(final Order entity) {
+    public long createOrder(final OrderAggregate order) {
         // Persist order
+        final var entity = new OrderEntity();
+        entity.setOrderer(order.orderer);
+        entity.setType(order.coffeeType);
+        entity.setQuantity(order.quantity);
         final var saved = this.repository.save(entity);
 
-        final var event = new OrderCreatedEvent();
-        event.coffeeType = saved.getType();
-        event.quantity = saved.getQuantity();
-        event.orderId = saved.getId();
-        // Post outbox message
-        final var outBoxMessage = new OutboxMessage();
-        outBoxMessage.setAggregate(event.toJson());
-        outBoxMessage.setAggregateType(OrderCreatedEvent.class.getSimpleName());
+        // Refresh order with persisted data
+        order.orderId = saved.getId();
+        order.status = saved.getOrderStatus();
 
         /// A Transactional outbox will handle publishing of messages to
         /// a broker by reading an outbox of messages that are posted as
         /// an atomic operation during order creation.
         if (this.useTransactionalOutbox) {
+            // Post outbox message
+            final var outBoxMessage = new OutboxMessage();
+            outBoxMessage.setAggregate(order.toJson());
+            outBoxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
             this.outboxingService.postToOutbox(outBoxMessage);
         } else {
-            this.publisher.publish(event.toJson());
+            this.publisher.publish(order);
         }
 
         return saved.getId();
     }
 
-    public List<Order> getAllOrders() {
+    public List<OrderEntity> getAllOrders() {
         return this.repository.getAllOrders();
     }
 

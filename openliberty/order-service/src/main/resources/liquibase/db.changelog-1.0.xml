@@ -28,4 +28,10 @@
             <column name="processedOn" type="timestamp"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="changelog-1.0:3" author="hassenasse">
+        <addColumn tableName="orders">
+            <column name="orderer" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -1,7 +1,7 @@
 package net.hassannazar.order.boundary;
 
 import net.hassannazar.order.domain.OrderService;
-import net.hassannazar.order.model.Order;
+import net.hassannazar.order.model.aggregate.OrderAggregate;
 import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -46,10 +46,10 @@ public class OrdersResource {
     }
 
     @POST
-    public Response createOrder(@Valid final Order entity) {
+    public Response createOrder(@Valid final OrderAggregate order) {
         var uriId = -1L;
         if (this.useChoreography) {
-            uriId = this.service.createOrder(entity);
+            uriId = this.service.createOrder(order);
         }
         if (this.useOrchestration) {
             throw new NotImplementedException("Not yet implemented");

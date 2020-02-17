@@ -1,6 +1,6 @@
 package net.hassannazar.order.repository;
 
-import net.hassannazar.order.model.Order;
+import net.hassannazar.order.model.OrderEntity;
 
 import javax.enterprise.context.Dependent;
 import javax.persistence.EntityManager;
@@ -19,26 +19,26 @@ public class OrderRepository {
     @PersistenceContext(unitName = "ordersPU")
     private EntityManager em;
 
-    public Order save(final Order entity) {
+    public OrderEntity save(final OrderEntity entity) {
         this.em.persist(entity);
         this.em.flush();
         return entity;
     }
 
-    public List<Order> getAllOrders() {
-        final var query = this.em.createNamedQuery("Orders.getAll", Order.class);
+    public List<OrderEntity> getAllOrders() {
+        final var query = this.em.createNamedQuery("Orders.getAll", OrderEntity.class);
         return query.getResultList();
     }
 
-    public Order findById(final long id) {
-        final var orders = this.em.find(Order.class, id);
+    public OrderEntity findById(final long id) {
+        final var orders = this.em.find(OrderEntity.class, id);
         if (orders == null) {
             throw new IllegalStateException();
         }
         return orders;
     }
 
-    public void update(final Order order) {
-        this.em.merge(order);
+    public void update(final OrderEntity orderEntity) {
+        this.em.merge(orderEntity);
     }
 }
