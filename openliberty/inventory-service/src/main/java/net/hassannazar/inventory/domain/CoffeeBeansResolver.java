@@ -14,10 +14,17 @@ import javax.enterprise.context.Dependent;
 public class CoffeeBeansResolver {
 
     int resolve(final CoffeeType type) {
-        return switch (type) {
-            case BLACK, LATTE -> 10;
-            case ESPRESSO, AMERICANO -> 15;
-            case DOUBLE_ESPRESSO -> 30;
-        };
+        switch (type) {
+            case BLACK:
+            case LATTE:
+                return 10;
+            case ESPRESSO:
+            case AMERICANO:
+                return 15;
+            case DOUBLE_ESPRESSO:
+                return 30;
+            default:
+                return -1;
+        }
     }
 }
