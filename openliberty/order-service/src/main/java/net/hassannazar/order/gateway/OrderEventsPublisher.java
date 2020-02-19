@@ -1,6 +1,8 @@
 package net.hassannazar.order.gateway;
 
 import net.hassannazar.order.model.aggregate.OrderAggregate;
+import net.hassannazar.outbox.domain.OutboxingService;
+import net.hassannazar.outbox.model.OutboxMessage;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -13,6 +15,7 @@ import java.util.Properties;
 
 /**
  * Purpose:
+ * Sends out events to kafka broker or a transactional outbox
  *
  * @author Hassan Nazar
  * @author www.hassannazar.net
@@ -36,6 +39,13 @@ public class OrderEventsPublisher {
     @ConfigProperty(name = "mp.messaging.outgoing.order-created.value.serializer")
     String valueSerializer;
 
+    @Inject
+    @ConfigProperty(name = "application.use.transactional.outbox")
+    boolean useTransactionalOutbox;
+
+    @Inject
+    OutboxingService outboxingService;
+
     private KafkaProducer<String, String> producer;
 
     @PostConstruct
@@ -50,7 +60,18 @@ public class OrderEventsPublisher {
     }
 
     public void publish(final OrderAggregate eventPayload) {
-        this.producer.send(new ProducerRecord<>(this.topic, eventPayload.toJson()));
+        /// A Transactional outbox will handle publishing of messages to
+        /// a broker by reading an outbox of messages that are posted as
+        /// an atomic operation during order creation.
+        if (this.useTransactionalOutbox) {
+            // Post outbox message
+            final var outBoxMessage = new OutboxMessage();
+            outBoxMessage.setAggregate(eventPayload.toJson());
+            outBoxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
+            this.outboxingService.postToOutbox(outBoxMessage);
+        } else {
+            this.producer.send(new ProducerRecord<>(this.topic, eventPayload.toJson()));
+        }
     }
 
 }

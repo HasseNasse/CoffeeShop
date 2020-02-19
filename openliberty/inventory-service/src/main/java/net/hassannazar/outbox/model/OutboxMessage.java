@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Table(name = "eventOutbox")
 @NamedQuery(name = OutboxMessage.FIND_ALL_UNPROCESSED, query = "select c from OutboxMessage c where c.processedOn is null")
 public class OutboxMessage {
-
     public static final String FIND_ALL_UNPROCESSED = "OutboxMessage.getUnprocessed";
 
     @Id

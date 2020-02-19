@@ -26,7 +26,7 @@ public class OrderRepository {
     }
 
     public List<OrderEntity> getAllOrders() {
-        final var query = this.em.createNamedQuery("Orders.getAll", OrderEntity.class);
+        final var query = this.em.createNamedQuery(OrderEntity.GETALL, OrderEntity.class);
         return query.getResultList();
     }
 

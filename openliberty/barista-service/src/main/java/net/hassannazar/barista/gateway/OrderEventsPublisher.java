@@ -1,6 +1,6 @@
-package net.hassannazar.inventory.gateway;
+package net.hassannazar.barista.gateway;
 
-import net.hassannazar.inventory.model.aggregate.OrderAggregate;
+import net.hassannazar.barista.model.aggregate.OrderAggregate;
 import net.hassannazar.outbox.domain.OutboxingService;
 import net.hassannazar.outbox.model.OutboxMessage;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -30,15 +30,15 @@ public class OrderEventsPublisher {
     String servers;
 
     @Inject
-    @ConfigProperty(name = "mp.messaging.outgoing.order-stock-allocated.topic")
+    @ConfigProperty(name = "mp.messaging.outgoing.order-processed.topic")
     String topic;
 
     @Inject
-    @ConfigProperty(name = "mp.messaging.outgoing.order-stock-allocated.key.serializer")
+    @ConfigProperty(name = "mp.messaging.outgoing.order-processed.key.serializer")
     String keySerializer;
 
     @Inject
-    @ConfigProperty(name = "mp.messaging.outgoing.order-stock-allocated.value.serializer")
+    @ConfigProperty(name = "mp.messaging.outgoing.order-processed.value.serializer")
     String valueSerializer;
 
     @Inject

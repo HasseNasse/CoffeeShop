@@ -14,4 +14,24 @@
             <column name="quantity" type="int"/>
         </createTable>
     </changeSet>
+    <changeSet id="changelog-1.0:2" author="hassannazar">
+        <createTable tableName="sludgebox">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="payload" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="changelog-1.0:3" author="hassenasse">
+        <createTable tableName="eventOutbox">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="aggregateType" type="varchar(255)"/>
+            <column name="aggregate" type="varchar(max)"/>
+            <column name="occurredOn" type="timestamp"/>
+            <column name="processedOn" type="timestamp"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

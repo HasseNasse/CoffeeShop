@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @NamedQuery(name = OrderEntity.GETALL, query = "select d from OrderEntity d")
 public class OrderEntity {
 
-    static final String GETALL = "OrderEntity.getAll";
+    public static final String GETALL = "OrderEntity.getAll";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class OutboxRepository {
 
-    @PersistenceContext(unitName = "ordersPU")
+    @PersistenceContext(unitName = "inventoryPU")
     private EntityManager em;
 
     @Transactional

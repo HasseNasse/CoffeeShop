@@ -5,6 +5,7 @@ import net.hassannazar.inventory.model.OrderStatus;
 import net.hassannazar.inventory.model.ProductType;
 import net.hassannazar.inventory.model.aggregate.OrderAggregate;
 import net.hassannazar.inventory.repository.InventoryRepository;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,10 @@ import javax.transaction.Transactional;
 public class InventoryService {
 
     private static final Logger logger = LoggerFactory.getLogger(InventoryService.class);
+
+    @Inject
+    @ConfigProperty(name = "application.use.transactional.outbox")
+    boolean useTransactionalOutbox;
 
     @Inject
     InventoryRepository repository;
@@ -52,4 +57,5 @@ public class InventoryService {
         this.eventsPublisher.publish(order);
         return order;
     }
+
 }
