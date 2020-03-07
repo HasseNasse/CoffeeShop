@@ -1,8 +1,6 @@
 package net.hassannazar.inventory.gateway;
 
 import net.hassannazar.inventory.model.aggregate.OrderAggregate;
-import net.hassannazar.outbox.domain.OutboxingService;
-import net.hassannazar.outbox.model.OutboxMessage;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -11,7 +9,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.Properties;
 
 /**
@@ -45,9 +42,6 @@ public class OrderEventsPublisher {
     @ConfigProperty(name = "application.use.transactional.outbox")
     boolean useTransactionalOutbox;
 
-    @Inject
-    OutboxingService outboxingService;
-
     private KafkaProducer<String, String> producer;
 
     @PostConstruct
@@ -61,18 +55,9 @@ public class OrderEventsPublisher {
         this.producer = new KafkaProducer<>(properties);
     }
 
-    @Transactional
     public void publish(final OrderAggregate eventPayload) {
-        if (this.useTransactionalOutbox) {
-            final var outboxMessage = new OutboxMessage();
-            outboxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
-            outboxMessage.setAggregate(eventPayload.toJson());
-            this.outboxingService.postToOutbox(outboxMessage);
-        } else {
-            // Publish a new kafka event
-            this.producer.send(new ProducerRecord<>(this.topic, eventPayload.toJson()));
-        }
-
+        // Publish a new kafka event
+        this.producer.send(new ProducerRecord<>(this.topic, String.valueOf(eventPayload.orderId), eventPayload.toJson()));
     }
 
 }

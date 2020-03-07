@@ -23,7 +23,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private final LocalDateTime orderDate;
+    private LocalDateTime orderDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -40,8 +40,8 @@ public class OrderEntity {
     private String orderer;
 
     public OrderEntity() {
-        this.orderDate = LocalDateTime.now();
-        this.orderStatus = OrderStatus.PENDING;
+        this.setOrderDate(LocalDateTime.now());
+        this.setOrderStatus(OrderStatus.PENDING);
     }
 
     public String getOrderer() {
@@ -86,5 +86,9 @@ public class OrderEntity {
 
     public void setOrderStatus(final OrderStatus status) {
         this.orderStatus = status;
+    }
+
+    public void setOrderDate(final LocalDateTime orderDate) {
+        this.orderDate = orderDate;
     }
 }

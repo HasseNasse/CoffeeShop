@@ -1,8 +1,6 @@
 package net.hassannazar.barista.gateway;
 
 import net.hassannazar.barista.model.aggregate.OrderAggregate;
-import net.hassannazar.outbox.domain.OutboxingService;
-import net.hassannazar.outbox.model.OutboxMessage;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -41,13 +39,6 @@ public class OrderEventsPublisher {
     @ConfigProperty(name = "mp.messaging.outgoing.order-processed.value.serializer")
     String valueSerializer;
 
-    @Inject
-    @ConfigProperty(name = "application.use.transactional.outbox")
-    boolean useTransactionalOutbox;
-
-    @Inject
-    OutboxingService outboxingService;
-
     private KafkaProducer<String, String> producer;
 
     @PostConstruct
@@ -63,16 +54,8 @@ public class OrderEventsPublisher {
 
     @Transactional
     public void publish(final OrderAggregate eventPayload) {
-        if (this.useTransactionalOutbox) {
-            final var outboxMessage = new OutboxMessage();
-            outboxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
-            outboxMessage.setAggregate(eventPayload.toJson());
-            this.outboxingService.postToOutbox(outboxMessage);
-        } else {
-            // Publish a new kafka event
-            this.producer.send(new ProducerRecord<>(this.topic, eventPayload.toJson()));
-        }
-
+        // Publish a new kafka event
+        this.producer.send(new ProducerRecord<>(this.topic, String.valueOf(eventPayload.orderId), eventPayload.toJson()));
     }
 
 }

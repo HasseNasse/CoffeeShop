@@ -5,6 +5,8 @@ import net.hassannazar.inventory.model.OrderStatus;
 import net.hassannazar.inventory.model.ProductType;
 import net.hassannazar.inventory.model.aggregate.OrderAggregate;
 import net.hassannazar.inventory.repository.InventoryRepository;
+import net.hassannazar.outbox.domain.OutboxingService;
+import net.hassannazar.outbox.model.OutboxMessage;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +39,11 @@ public class InventoryService {
     @Inject
     OrderEventsPublisher eventsPublisher;
 
+    @Inject
+    OutboxingService outboxingService;
+
     @Transactional
-    public OrderAggregate allocateBeans(final OrderAggregate order) {
+    public void allocateBeans(final OrderAggregate order) {
         logger.info("Allocating beans for order with id: {} for orderer: {}", order.orderId, order.orderer);
         final var beansRequired = this.beansResolver.resolve(order.coffeeType);
         final var inventory = this.repository.getInventoryOfType(ProductType.COFFEEBEANS);
@@ -54,8 +59,28 @@ public class InventoryService {
 
         // Update status of order for emission
         order.status = OrderStatus.PLACED;
-        this.eventsPublisher.publish(order);
-        return order;
+        if (this.useTransactionalOutbox) {
+            final var outboxMessage = new OutboxMessage();
+            outboxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
+            outboxMessage.setAggregate(order.toJson());
+            this.outboxingService.postToOutbox(outboxMessage);
+        } else {
+            this.eventsPublisher.publish(order);
+        }
+    }
+
+    @Transactional
+    public void notifyStockEmpty(final OrderAggregate order) {
+        order.status = OrderStatus.BEANS_OUT_OF_STOCK;
+
+        if (this.useTransactionalOutbox) {
+            final var outboxMessage = new OutboxMessage();
+            outboxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
+            outboxMessage.setAggregate(order.toJson());
+            this.outboxingService.postToOutbox(outboxMessage);
+        } else {
+            this.eventsPublisher.publish(order);
+        }
     }
 
 }

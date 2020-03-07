@@ -9,7 +9,6 @@ package net.hassannazar.inventory.model;
 public enum OrderStatus {
     PENDING,
     PLACED,
-    PREPARING,
     FINISHED,
-    CANCELLED
+    BEANS_OUT_OF_STOCK
 }

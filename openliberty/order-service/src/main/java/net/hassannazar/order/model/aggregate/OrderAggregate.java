@@ -7,6 +7,7 @@ import javax.json.bind.JsonbBuilder;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 /**
  * Purpose:
@@ -22,9 +23,11 @@ public class OrderAggregate {
     @NotNull
     @Max(10)
     public int quantity;
-    
+
     @NotNull
     public CoffeeType coffeeType;
+
+    @Null
     public OrderStatus status;
 
     public String toJson() {

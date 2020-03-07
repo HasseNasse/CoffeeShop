@@ -2,9 +2,9 @@ package net.hassannazar.order.boundary;
 
 import net.hassannazar.order.domain.OrderService;
 import net.hassannazar.order.model.aggregate.OrderAggregate;
-import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("orders")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@ApplicationScoped
 public class OrdersResource {
 
     @Context
@@ -46,13 +47,13 @@ public class OrdersResource {
     }
 
     @POST
-    public Response createOrder(@Valid final OrderAggregate order) {
+    public Response createOrder(final @Valid OrderAggregate order) {
         var uriId = -1L;
         if (this.useChoreography) {
             uriId = this.service.createOrder(order);
         }
         if (this.useOrchestration) {
-            throw new NotImplementedException("Not yet implemented");
+            throw new NotAllowedException("Not yet implemented");
         }
         final var uriLocation = this.uriInfo.getAbsolutePathBuilder().path(Long.toString(uriId)).build();
         return Response.created(uriLocation).build();

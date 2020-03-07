@@ -5,6 +5,9 @@ import net.hassannazar.order.model.OrderEntity;
 import net.hassannazar.order.model.OrderStatus;
 import net.hassannazar.order.model.aggregate.OrderAggregate;
 import net.hassannazar.order.repository.OrderRepository;
+import net.hassannazar.outbox.domain.OutboxingService;
+import net.hassannazar.outbox.model.OutboxMessage;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -21,6 +24,13 @@ public class OrderService {
     @Inject
     private OrderEventsPublisher publisher;
 
+    @Inject
+    @ConfigProperty(name = "application.use.transactional.outbox")
+    boolean useTransactionalOutbox;
+
+    @Inject
+    OutboxingService outboxingService;
+
     @Transactional
     public long createOrder(final OrderAggregate order) {
         // Persist order
@@ -34,7 +44,18 @@ public class OrderService {
         order.orderId = saved.getId();
         order.status = saved.getOrderStatus();
 
-        this.publisher.publish(order);
+        /// A Transactional outbox will handle publishing of messages to
+        /// a broker by reading an outbox of messages that are posted as
+        /// an atomic operation during order creation.
+        if (this.useTransactionalOutbox) {
+            // Post outbox message
+            final var outBoxMessage = new OutboxMessage();
+            outBoxMessage.setAggregate(order.toJson());
+            outBoxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
+            this.outboxingService.postToOutbox(outBoxMessage);
+        } else {
+            this.publisher.publish(order);
+        }
         return saved.getId();
     }
 
@@ -42,6 +63,7 @@ public class OrderService {
         return this.repository.getAllOrders();
     }
 
+    @Transactional
     public void updateStatus(final long id, final OrderStatus status) {
         try {
             final var order = this.repository.findById(id);

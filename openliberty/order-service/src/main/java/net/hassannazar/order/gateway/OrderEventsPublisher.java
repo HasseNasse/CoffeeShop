@@ -1,15 +1,15 @@
 package net.hassannazar.order.gateway;
 
 import net.hassannazar.order.model.aggregate.OrderAggregate;
-import net.hassannazar.outbox.domain.OutboxingService;
-import net.hassannazar.outbox.model.OutboxMessage;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Properties;
 
@@ -20,8 +20,10 @@ import java.util.Properties;
  * @author Hassan Nazar
  * @author www.hassannazar.net
  */
-@Dependent
+@ApplicationScoped
 public class OrderEventsPublisher {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderEventsPublisher.class.getSimpleName());
 
     @Inject
     @ConfigProperty(name = "mp.messaging.connector.liberty-kafka.bootstrap.servers")
@@ -39,13 +41,6 @@ public class OrderEventsPublisher {
     @ConfigProperty(name = "mp.messaging.outgoing.order-created.value.serializer")
     String valueSerializer;
 
-    @Inject
-    @ConfigProperty(name = "application.use.transactional.outbox")
-    boolean useTransactionalOutbox;
-
-    @Inject
-    OutboxingService outboxingService;
-
     private KafkaProducer<String, String> producer;
 
     @PostConstruct
@@ -60,18 +55,8 @@ public class OrderEventsPublisher {
     }
 
     public void publish(final OrderAggregate eventPayload) {
-        /// A Transactional outbox will handle publishing of messages to
-        /// a broker by reading an outbox of messages that are posted as
-        /// an atomic operation during order creation.
-        if (this.useTransactionalOutbox) {
-            // Post outbox message
-            final var outBoxMessage = new OutboxMessage();
-            outBoxMessage.setAggregate(eventPayload.toJson());
-            outBoxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
-            this.outboxingService.postToOutbox(outBoxMessage);
-        } else {
-            this.producer.send(new ProducerRecord<>(this.topic, eventPayload.toJson()));
-        }
+        logger.info("Sending order-created event with key: {}", eventPayload.orderId);
+        this.producer.send(new ProducerRecord<>(this.topic, String.valueOf(eventPayload.orderId), eventPayload.toJson()));
     }
 
 }

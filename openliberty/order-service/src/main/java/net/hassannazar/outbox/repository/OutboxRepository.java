@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Purpose:
+ * Handles outbox message persistence
  *
  * @author Hassan Nazar
  * @author www.hassannazar.net

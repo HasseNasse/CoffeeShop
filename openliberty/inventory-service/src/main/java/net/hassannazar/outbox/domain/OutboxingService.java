@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Purpose:
@@ -21,9 +23,19 @@ public class OutboxingService {
     OutboxRepository repository;
 
     public long postToOutbox(final OutboxMessage message) {
-        logger.info("Adding message to outbox of type: {}", message.getAggregateType());
         final var persistedMessage = this.repository.post(message);
+        logger.info("Adding message to outbox of type: {}", message.getAggregateType());
         return persistedMessage.getId();
+    }
+
+    public void markAsSent(final OutboxMessage outboxMessage) {
+        logger.info("Marking message with id {} as sent!", outboxMessage.getId());
+        outboxMessage.setProcessedOn(LocalDateTime.now());
+        this.repository.update(outboxMessage);
+    }
+
+    public List<OutboxMessage> pollRecords() {
+        return this.repository.getUnprocessedMessages();
     }
 
 }

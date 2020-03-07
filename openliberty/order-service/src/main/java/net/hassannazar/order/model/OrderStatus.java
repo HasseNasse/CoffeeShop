@@ -11,5 +11,6 @@ public enum OrderStatus {
     PLACED,
     PREPARING,
     FINISHED,
-    CANCELLED
+    CANCELLED,
+    BEANS_OUT_OF_STOCK
 }

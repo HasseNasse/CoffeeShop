@@ -9,6 +9,8 @@ import javax.enterprise.inject.Produces;
 
 /**
  * Purpose:
+ * Produces an MP Context propagation managed-executor which allowes
+ * for simplified concurrency handling.
  *
  * @author Hassan Nazar
  * @author www.hassannazar.net

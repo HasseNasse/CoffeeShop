@@ -3,6 +3,9 @@ package net.hassannazar.barista.domain;
 import net.hassannazar.barista.gateway.OrderEventsPublisher;
 import net.hassannazar.barista.model.OrderStatus;
 import net.hassannazar.barista.model.aggregate.OrderAggregate;
+import net.hassannazar.outbox.domain.OutboxingService;
+import net.hassannazar.outbox.model.OutboxMessage;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,13 @@ public class BaristaService {
     @Inject
     OrderEventsPublisher eventsPublisher;
 
+    @Inject
+    @ConfigProperty(name = "application.use.transactional.outbox")
+    boolean useTransactionalOutbox;
+
+    @Inject
+    OutboxingService outboxingService;
+
     @Transactional
     public void prepareCoffee(final OrderAggregate orderAggregate) {
         logger.info("Preparing order of {} and quantity {} for orderer: {}", orderAggregate.coffeeType, orderAggregate.quantity, orderAggregate.orderer);
@@ -32,8 +42,15 @@ public class BaristaService {
             logger.info("Finishing order of {} and quantity {} for orderer: {}", orderAggregate.coffeeType, orderAggregate.quantity, orderAggregate.orderer);
             orderAggregate.status = OrderStatus.FINISHED;
 
-            // Publish an event when order is finished
-            this.eventsPublisher.publish(orderAggregate);
+            if (this.useTransactionalOutbox) {
+                final var outboxMessage = new OutboxMessage();
+                outboxMessage.setAggregateType(OrderAggregate.class.getSimpleName());
+                outboxMessage.setAggregate(orderAggregate.toJson());
+                this.outboxingService.postToOutbox(outboxMessage);
+            } else {
+                // Publish an event when order is finished
+                this.eventsPublisher.publish(orderAggregate);
+            }
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }

@@ -14,7 +14,7 @@ import javax.persistence.Id;
 @Entity
 public class SludgeBox {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String payload;
 
@@ -23,18 +23,18 @@ public class SludgeBox {
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
     public String getPayload() {
-        return payload;
+        return this.payload;
     }
 
-    public void setPayload(String payload) {
+    public void setPayload(final String payload) {
         this.payload = payload;
     }
 }
