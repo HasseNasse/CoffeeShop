@@ -1,4 +1,4 @@
-package io.hreem.coffeeshop.monolith.ordering.domain.valueobjects;
+package io.hreem.coffeeshop.monolith.ordering.domain.entities;
 
 import io.hreem.coffeeshop.monolith.ordering.domain.aggregates.OrderAggregate;
 
@@ -13,6 +13,7 @@ public class OrderItem {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "orderId")
     private OrderAggregate orderAggregate;
 
     private String itemCode;

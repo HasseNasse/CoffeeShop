@@ -9,11 +9,14 @@ import java.util.List;
 @Entity
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private long customerId;
     private String name;
-    @OneToMany
-    @JoinColumn(name = "orderId")
+    @OneToMany(
+            mappedBy = "customer",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<OrderAggregate> orderAggregate;
 
     public Customer() {

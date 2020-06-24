@@ -2,8 +2,7 @@ package io.hreem.coffeeshop.monolith.ordering.domain.aggregates;
 
 
 import io.hreem.coffeeshop.monolith.ordering.domain.entities.Customer;
-import io.hreem.coffeeshop.monolith.ordering.domain.valueobjects.OrderDetails;
-import io.hreem.coffeeshop.monolith.ordering.domain.valueobjects.OrderItem;
+import io.hreem.coffeeshop.monolith.ordering.domain.entities.OrderItem;
 import io.hreem.coffeeshop.monolith.ordering.domain.valueobjects.OrderStatus;
 
 import javax.persistence.*;
@@ -21,15 +20,12 @@ public class OrderAggregate {
 
     // Surrogate ID
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private long id;
-
-    // Business ID
-    private String orderId;
 
     private String ticketId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "customerId")
     private Customer customer;
 
@@ -37,7 +33,7 @@ public class OrderAggregate {
     private OrderStatus orderStatus;
 
     @OneToMany(
-            mappedBy = "order",
+            mappedBy = "orderAggregate",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
@@ -52,14 +48,6 @@ public class OrderAggregate {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
     }
 
     public String getTicketId() {
